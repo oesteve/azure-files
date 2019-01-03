@@ -1,0 +1,20 @@
+{
+    "name": "oscar/azure-files",
+    "description": "Azure blob utils",
+    "type": "project",
+    "require": {
+        "microsoft/azure-storage-blob": "dev-master",
+        "symfony/console": "^4.3@dev"
+    },
+    "autoload": {
+        "psr-4": {"Oesteve\\": "src/"}
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Oscar Esteve",
+            "email": "oscarsdt@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev"
+}
