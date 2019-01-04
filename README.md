@@ -8,8 +8,15 @@ To use adjust your requirements for this example:
 
     php app.php delete \
       --connectionString 'AccountName=YourAccoutNameHere;AccountKey=YourAccountKey' \
-      --containerName 'backup'
-      --olderThan '30 days ago' \
+      --containerName 'backup' \
+      --olderThan '30 days ago'
+      
+With docker:
+
+    docker run -it --rm oesteve/azure-files deleet \
+      --connectionString 'AccountName=YourAccoutNameHere;AccountKey=YourAccountKey' \
+      --containerName 'backup' \
+      --olderThan '30 days ago'
 
 ## Options
 
@@ -24,3 +31,8 @@ To show al available options use `--help`:
     
     php app.php delete --help
         
+### Upload action
+
+To show al available options use `--help`:
+    
+    php app.php upload --help

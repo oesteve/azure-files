@@ -2,23 +2,17 @@
 
 namespace Oesteve\Command;
 
-use MicrosoftAzure\Storage\Blob\BlobRestProxy;
 use MicrosoftAzure\Storage\Blob\Models\Blob;
 use MicrosoftAzure\Storage\Blob\Models\ListBlobsOptions;
-use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 
-class Remove extends Command
+class Remove extends BaseCommand
 {
-    protected static $defaultName = 'delete';
 
-    /** @var InputInterface */
-    private $input;
-    /** @var OutputInterface */
-    private $output;
+    protected static $defaultName = 'delete';
 
     /** @var int  */
     private $deleted = 0;
@@ -27,25 +21,18 @@ class Remove extends Command
 
     protected function configure()
     {
+        parent::configure();
+
         $this
             // the short description shown while running "php bin/console list"
             ->setDescription('Action to delete bob files')
-
-            // the full command description shown when running the command with
-            // the "--help" option
-            ->setHelp('This command allows you to remove files on bloc account based on some criteria')
-            ->addOption('connectionString', null, InputOption::VALUE_REQUIRED, 'Azure Blobs connection string')
-            ->addOption('containerName', null, InputOption::VALUE_REQUIRED, 'Azure Blob container name')
             ->addOption('olderThan', null, InputOption::VALUE_REQUIRED, 'Files older than this date will be deleted')
-            ->addOption('dryRun', null, InputOption::VALUE_NONE, "The blobs will not be delete")
         ;
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
-        $this->input = $input;
-        $this->output = $output;
+        parent::execute($input, $output);
 
         $blobClient = $this->getClient();
 
@@ -62,7 +49,7 @@ class Remove extends Command
 
                 $this->filtered++;
                 try {
-                    $olderThanDateTime = $this->getOltherThanDateTime();
+                    $olderThanDateTime = $this->getOlderThanDateTime();
                 } catch (\Exception $e) {
                     $this->output->writeln($e->getMessage());
                     return 1;
@@ -94,38 +81,10 @@ class Remove extends Command
     }
 
     /**
-     * @return BlobRestProxy
-     */
-    protected function getClient()
-    {
-        $blobClient = BlobRestProxy::createBlobService(
-            $this->input->getOption("connectionString")
-        );
-        return $blobClient;
-    }
-
-    /**
-     * @return bool|null|string|string[]
-     */
-    protected function getContainer()
-    {
-        $container = $this->input->getOption("containerName");
-        return $container;
-    }
-
-    /**
-     * @return bool
-     */
-    private function isDrayRun()
-    {
-        return (bool)$this->input->getOption('dryRun');
-    }
-
-    /**
      * @return \DateTime
      * @throws \Exception
      */
-    protected function getOltherThanDateTime()
+    protected function getOlderThanDateTime()
     {
         $option = $this->input->getOption('olderThan');
 
