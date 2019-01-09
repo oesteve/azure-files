@@ -13,7 +13,7 @@ To use adjust your requirements for this example:
       
 With docker:
 
-    docker run -it --rm oesteve/azure-files deleet \
+    docker run -it --rm oesteve/azure-files delete \
       --connectionString 'AccountName=YourAccoutNameHere;AccountKey=YourAccountKey' \
       --containerName 'backup' \
       --olderThan '30 days ago'

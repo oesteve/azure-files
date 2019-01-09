@@ -5,13 +5,15 @@ namespace Oesteve\Command;
 
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 class Upload extends BaseCommand
 {
 
-    protected static $defaultName = 'uploadd';
+    protected static $defaultName = 'upload';
+
+    /** @var int */
+    private $uploads;
 
     protected function configure()
     {
@@ -44,6 +46,9 @@ class Upload extends BaseCommand
             $blobName = sprintf('%s/%s',$prefix, basename($source));
             $this->uploadBlob($source, $blobName);
         }else {
+
+            $files = [];
+
             // Is dir ...
             $files = $this->getDirContents($source, $files);
 
@@ -52,6 +57,8 @@ class Upload extends BaseCommand
                 $this->uploadBlob($file, $blobName);
             }
         }
+
+        $this->printResume();
     }
 
 
@@ -79,6 +86,7 @@ class Upload extends BaseCommand
         $blobClient = $this->getClient();
         $content = fopen($pathFile, "r");
 
+        $this->uploads++;
 
         //Upload blob
         if($this->isDrayRun()){
@@ -88,17 +96,11 @@ class Upload extends BaseCommand
             $blobClient->createBlockBlob($this->getContainer(), $blob, $content);
         }
 
-        // And remove ?
-        if($this->removeSource()){
-
-        }
-
     }
 
     /**
      * @param $dir
      * @param array $results
-     * @param bool $recursive
      * @return array
      * @throws \Exception
      */
@@ -109,7 +111,8 @@ class Upload extends BaseCommand
             $path = realpath($dir.DIRECTORY_SEPARATOR.$value);
             if(!is_dir($path)) {
                 $results[] = $path;
-            } else if($value != "." && $value != ".." && ($this->getSource() === $dir)) {
+            } else if($value != "." && $value != "..") {
+
                 $this->getDirContents($path,$results);
             }
         }
@@ -117,8 +120,9 @@ class Upload extends BaseCommand
         return $results;
     }
 
-    private function removeSource()
+    private function printResume()
     {
+        $this->output->writeln(sprintf("%d files was uploads.", $this->uploads));
     }
 
 }
